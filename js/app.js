@@ -35,11 +35,109 @@ import fetch from "isomorphic-fetch"
 
 import DOM from 'react-dom'
 import React, {Component} from 'react'
+import Backbone from 'Backbone'
+import Jquery from 'jquery'
+
+console.log(Backbone)
 
 function app() {
+
     // start app
     // new Router()
-    DOM.render(<p>test 2</p>, document.querySelector('.container'))
+    var AppView = React.createClass ({
+
+        _increment: function(moving) {
+            if (moving === "forwards") {
+                this.setState({
+                    year: this.state.year + 1
+                })
+            }
+
+           if (moving === "backwards") {
+                this.setState({
+                    year: this.state.year -= 1
+                })
+            }
+        },
+
+        _fastForward: function() {
+            this.setState({
+                moving: "forwards",
+            })
+
+            var self = this
+            this.state.go(self)
+            
+        },
+
+        _reverse: function() {
+            this.setState({
+                moving: "backwards" 
+            })
+
+            var self = this
+            this.state.go(self)
+        },
+
+        _stop: function() {
+            this.setState({
+                go: null
+            })
+        },
+
+        getInitialState: function() {
+            return {
+                year: 2016,
+                moving:"",
+                go: function(self) {setInterval(function() { self._increment(self.state.moving)}, 600)}
+            }
+        },
+
+    	render: function() {
+    		return (
+		    	<div>
+			    	<div>
+                    <h1 className="headline">React Time Machine</h1>
+                    <TimeView year={this.state.year}/>
+				    	 <button onClick={this._fastForward}className="go">Fast Forward!</button>
+				    	 <button onClick={this._reverse}className="stop">Reverse!</button>
+                         <button onClick={this._stop}className="stop">Stop!</button>
+			    	</div>
+		    	</div>
+	    	)
+    	}
+    	
+    })
+
+    var TimeView = React.createClass ({
+        render: function() {
+            return (
+                <div className="timeHolder">
+                    <h1>Year:</h1>
+                    <h1 className="time">{this.props.year}</h1>
+                </div>
+            )
+        }
+    })
+
+    var MyRouter = Backbone.Router.extend({
+        routes: {
+            "*default": "home"
+        },
+
+        home: function() {
+            DOM.render(<AppView/>, document.querySelector('.container'))
+
+        },
+
+        initialize: function() {
+        //Starts BackBone
+            Backbone.history.start()
+        }
+
+    })
+
+    var nr = new MyRouter()
 }
 
 app()
