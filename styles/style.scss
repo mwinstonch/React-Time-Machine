@@ -112,7 +112,10 @@ body {
 /**
  * App code
  */
-
+body {
+    color: green;
+    background: #D8D8D8;
+}
  .headline {
     margin-top: 50px;
     display: inline-block;
